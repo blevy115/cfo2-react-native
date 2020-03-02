@@ -1,10 +1,16 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import getOrientation from './src/hardware/getOrientation'
 
 export default function App() {
+  const [orientation, setOrientation] = getOrientation()
   return (
     <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
+      {
+        orientation == 'portrait' ?
+        <Text>Portrait</Text>:
+        <Text>Landscape</Text>
+      }
     </View>
   );
 }
