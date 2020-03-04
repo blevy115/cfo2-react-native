@@ -1,20 +1,35 @@
-import React from 'react';
-import {StyleSheet, FlatList} from 'react-native';
-import austinWeather from '../data/austin_weather.json';
-import { Table, Row, Rows } from 'react-native-table-component';
-
-const tableData = austinWeather.map(item => [item.Date, item.TempHighF+'F', item.TempAvgF+'F', item.TempLowF+'F', item.WindHighMPH+'MPH', item.WindAvgMPH+'MPH'])
-tableData.unshift(['Date', 'Temp High', 'Temp Avg', 'Temp Low', 'Wind High', 'Wind Avg']);
+import React, {useState, useEffect} from 'react';
+import {Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
+import { Table, Row } from 'react-native-table-component';
+import getOrientation from '../hardware/getOrientation';
+import columnSort from '../methods/columnSort';
 
 const TableWrapper = () => {
+  const [tableData, setTableData] = useState([]);
+  useEffect(() => {
+    setTableData(columnSort());
+  }, []);
+
+  const titleElement = (title, column) => (
+    <TouchableOpacity onPress={() => setTableData(columnSort(column, 'up'))}>
+      <Text style={styles.headersText}>{title}</Text>
+    </TouchableOpacity>
+  )
+
+  const headers = [['Date', 'Date'], ['Temp High','TempHighF'], ['Temp Avg', 'TempAvgF'], ['Temp Low', 'TempLowF'], ['Wind High', 'WindHighMPH'], ['Wind Avg', 'WindAvgMPH']];
+
+  const tableHeaders = headers.map(x => titleElement(x[0],x[1]));
+
+  const [ orientation ] = getOrientation();
+
   return (
-    <Table borderStyle={styles.table}>
+    <Table style={orientation === 'portrait' ? styles.listPortrait: styles.listLandscape}>
+    <Row data={tableHeaders} style={styles.headers} textStyle={styles.headersText} flexArr={[2,1,1,1,1,1]}></Row>
       <FlatList
-        style={styles.list}
         data={tableData}
         keyExtractor={item => item[0]}
         renderItem={({ item }) => {
-          return <Row data={item} textStyle={styles.text} flexArr={[1.5,1,1,1,1,1]} style={item[0] === 'Date' ? styles.head: null}>
+          return <Row data={item} textStyle={styles.text} flexArr={[2,1,1,1,1,1]}>
           </Row>
         }}
       />
@@ -23,7 +38,12 @@ const TableWrapper = () => {
 }
 
 const styles = StyleSheet.create({
-  head: { backgroundColor: '#f1f8ff'},
+  headers: { backgroundColor: '#f1f8ff'},
+  headersText: {
+    paddingVertical: 6 ,
+    textAlign:'center',
+    fontSize: 20,
+  },
   text: {
     paddingVertical: 6 ,
     textAlign:'center',
@@ -31,14 +51,17 @@ const styles = StyleSheet.create({
     borderWidth:1
   },
   table: {
-    borderWidth: 2,
-    borderColor: '#c8e1ff',
-    marginTop:50
-  },
-  list: {
     marginVertical: 40,
-    marginHorizontal:10
+    marginHorizontal: 10
   },
+  listPortrait: {
+    marginVertical: 40,
+    marginHorizontal: 10
+  },
+  listLandscape: {
+    marginVertical: 10,
+    marginHorizontal: 40
+  }
 })
 
 export default TableWrapper;
