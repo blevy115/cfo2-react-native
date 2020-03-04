@@ -1,35 +1,37 @@
 import React, {useState, useEffect} from 'react';
-import {Text, StyleSheet, FlatList, TouchableOpacity} from 'react-native';
+import {Text, StyleSheet, FlatList, TouchableOpacity, View} from 'react-native';
 import { Table, Row } from 'react-native-table-component';
 import getOrientation from '../hardware/getOrientation';
 import columnSort from '../methods/columnSort';
+import SortArrows from './SortArrows';
+
 
 const TableWrapper = () => {
   const [tableData, setTableData] = useState([]);
   useEffect(() => {
     setTableData(columnSort());
   }, []);
+  
+  const [ orientation ] = getOrientation();
+  const headers = [['Date', 'Date'], ['Temp High','TempHighF'], ['Temp Avg', 'TempAvgF'], ['Temp Low', 'TempLowF'], ['Wind High', 'WindHighMPH'], ['Wind Avg', 'WindAvgMPH']];
 
   const titleElement = (title, column) => (
-    <TouchableOpacity onPress={() => setTableData(columnSort(column, 'up'))}>
-      <Text style={styles.headersText}>{title}</Text>
-    </TouchableOpacity>
+    <View style={orientation === 'portrait' ? styles.titlePortrait : styles.titleLandscape}>
+      <Text style={styles.headersText}>{title === 'Date' && orientation === 'portrait' ? title + '\n' : title}</Text>
+      <SortArrows setTableData={setTableData} column={column}/>
+    </View>
   )
-
-  const headers = [['Date', 'Date'], ['Temp High','TempHighF'], ['Temp Avg', 'TempAvgF'], ['Temp Low', 'TempLowF'], ['Wind High', 'WindHighMPH'], ['Wind Avg', 'WindAvgMPH']];
 
   const tableHeaders = headers.map(x => titleElement(x[0],x[1]));
 
-  const [ orientation ] = getOrientation();
-
   return (
     <Table style={orientation === 'portrait' ? styles.listPortrait: styles.listLandscape}>
-    <Row data={tableHeaders} style={styles.headers} textStyle={styles.headersText} flexArr={[2,1,1,1,1,1]}></Row>
+    <Row data={tableHeaders} style={styles.headers} textStyle={styles.headersText} flexArr={orientation === 'portrait' ? [2,1,1,1,1,1]: [1.3,1,1,1,1]}></Row>
       <FlatList
         data={tableData}
         keyExtractor={item => item[0]}
         renderItem={({ item }) => {
-          return <Row data={item} textStyle={styles.text} flexArr={[2,1,1,1,1,1]}>
+          return <Row data={item} textStyle={styles.text} flexArr={orientation === 'portrait' ? [2,1,1,1,1,1]: [1.3,1,1,1,1]}>
           </Row>
         }}
       />
@@ -61,6 +63,14 @@ const styles = StyleSheet.create({
   listLandscape: {
     marginVertical: 10,
     marginHorizontal: 40
+  },
+  titlePortrait: {
+    flexDirection:'column',
+    justifyContent:'space-between'
+  },
+  titleLandscape: {
+    flexDirection:'row',
+    justifyContent:'space-around'
   }
 })
 
