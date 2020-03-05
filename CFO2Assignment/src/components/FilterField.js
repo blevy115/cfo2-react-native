@@ -1,6 +1,5 @@
 import React, {useState, useContext} from 'react'
 import {TextInput, StyleSheet} from 'react-native';
-import columnFilter from '../methods/columnFilter';
 import { Context as WeatherContext } from '../context/WeatherContext';
 
 const FilterField = ({ columnIndex }) => {

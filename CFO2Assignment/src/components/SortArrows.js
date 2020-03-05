@@ -1,6 +1,5 @@
 import React, {useContext} from 'react'
 import {TouchableOpacity, View, StyleSheet} from 'react-native';
-import columnSort from '../methods/columnSort';
 import { AntDesign } from '@expo/vector-icons';
 import getOrientation from '../hardware/getOrientation';
 import { Context as WeatherContext } from '../context/WeatherContext';
