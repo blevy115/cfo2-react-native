@@ -8,9 +8,12 @@ const weatherReducer = (state, action) => {
       case 'sort_data':
         return {...state, tableData: action.payload(state.tableData)}
       case 'filter_data':
-        return {...state, tableData: action.payload(state.completeTableData)}
+        return {...state, tableData: action.payload(state.completeTableData, state.filterFields)}
+      case 'add_filter':
+        state.filterFields[action.payload[0]] = action.payload[1];
+      return state;
     default:
-    return state;
+      return state;
   }
 }
 
@@ -20,9 +23,18 @@ const loadData = dispatch => () => {
   dispatch({type: 'load_data', payload: tableData})
 }
 
-const filterData = dispatch => (columnIndex, input) => {
-  const filterFunction = (tableData) => {
-    return tableData.filter( data => String(data[columnIndex]).includes(input))
+const filterData = dispatch => async (columnIndex, input) => {
+
+  await dispatch({type:'add_filter', payload:[columnIndex, input]})
+  const filterFunction = (tableData, filterFields) => {
+    return tableData.filter( data => {
+      for(let i = 0; i< data.length ; i++) {
+        if(filterFields[i] && !data[i].includes(filterFields[i])){
+          return false
+        }
+      }
+      return true
+    })
   }
   dispatch({type:'filter_data', payload: filterFunction})
 }
@@ -47,5 +59,5 @@ const sortData = dispatch => (columnIndex, direction) => {
 export const { Provider, Context } = createDataContext(
   weatherReducer,
   {loadData, filterData, sortData},
-  {trackData:[]}
+  {trackData:[], filterFields:['','','','','','']}
 )
