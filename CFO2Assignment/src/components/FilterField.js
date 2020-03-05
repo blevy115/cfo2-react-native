@@ -1,12 +1,15 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import {TextInput, StyleSheet} from 'react-native';
 import columnFilter from '../methods/columnFilter';
+import { Context as WeatherContext } from '../context/WeatherContext';
 
-const FilterField = ({ title, column, setTableData }) => {
-  const [value, onChangeText] = React.useState('');
+const FilterField = ({ columnIndex }) => {
+  const [value, onChangeText] = useState('');
+  const { state, filterData } = useContext(WeatherContext)
+
   const enterText = (text) => {
     onChangeText(text)
-    setTableData(columnFilter(column, text))
+    filterData(columnIndex, text)
   }
 
   return (
@@ -14,7 +17,6 @@ const FilterField = ({ title, column, setTableData }) => {
       style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
       onChangeText={text => enterText(text)}
       value={value}
-      placeholder={title}
     />
   )
 }

@@ -1,41 +1,42 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext } from 'react';
 import {Text, StyleSheet, FlatList, TouchableOpacity, View} from 'react-native';
 import { Table, Row } from 'react-native-table-component';
 import getOrientation from '../hardware/getOrientation';
-import loadData from '../methods/loadData';
+// import loadData from '../methods/loadData';
 import SortArrows from './SortArrows';
 import FilterField from './FilterField';
-
+import { Context as WeatherContext } from '../context/WeatherContext';
 
 const TableWrapper = () => {
   const [tableData, setTableData] = useState([]);
+  const { state, loadData } = useContext(WeatherContext)
   useEffect(() => {
-    setTableData(loadData());
+    loadData();
   }, []);
 
   const [ orientation ] = getOrientation();
-  const headers = [['Date', 'Date'], ['Temp High','TempHighF'], ['Temp Avg', 'TempAvgF'], ['Temp Low', 'TempLowF'], ['Wind High', 'WindHighMPH'], ['Wind Avg', 'WindAvgMPH']];
+  const headers = ['Date', 'Temp High', 'Temp Avg', 'Temp Low', 'Wind High', 'Wind Avg'];
 
-  const titleElement = (title, column) => (
+  const titleElement = (title, columnIndex) => (
     <View style={orientation === 'portrait' ? styles.titlePortrait : styles.titleLandscape}>
       <Text style={styles.headersText}>{title === 'Date' && orientation === 'portrait' ? title + '\n' : title}</Text>
-      <SortArrows setTableData={setTableData} column={column}/>
+      <SortArrows columnIndex={columnIndex}/>
     </View>
   )
 
-  const rowFilter = (title, column) => (
-    <FilterField title={title} column={column} setTableData={setTableData} />
+  const rowFilter = (columnIndex) => (
+    <FilterField columnIndex={columnIndex} />
   )
 
-  const tableHeaders = headers.map(x => titleElement(x[0],x[1]));
-  const tableFilter = headers.map(x => rowFilter(x[0],x[1]))
+  const tableHeaders = headers.map(x => titleElement(x, headers.indexOf(x)));
+  const tableFilter = headers.map(x => rowFilter(headers.indexOf(x)))
 
   return (
     <Table style={orientation === 'portrait' ? styles.listPortrait: styles.listLandscape}>
     <Row data={tableHeaders} style={styles.headers} textStyle={styles.headersText} flexArr={orientation === 'portrait' ? [2,1,1,1,1,1]: [1.3,1,1,1,1]}></Row>
     <Row data={tableFilter} style={styles.headers} textStyle={styles.headersText} flexArr={orientation === 'portrait' ? [2,1,1,1,1,1]: [1.3,1,1,1,1]}></Row>
       <FlatList
-        data={tableData}
+        data={state.tableData}
         keyExtractor={item => item[0]}
         renderItem={({ item }) => {
           return <Row data={item} textStyle={styles.text} flexArr={orientation === 'portrait' ? [2,1,1,1,1,1]: [1.3,1,1,1,1]}>
