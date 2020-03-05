@@ -2,16 +2,17 @@ import React, {useState, useEffect} from 'react';
 import {Text, StyleSheet, FlatList, TouchableOpacity, View} from 'react-native';
 import { Table, Row } from 'react-native-table-component';
 import getOrientation from '../hardware/getOrientation';
-import columnSort from '../methods/columnSort';
+import loadData from '../methods/loadData';
 import SortArrows from './SortArrows';
+import FilterField from './FilterField';
 
 
 const TableWrapper = () => {
   const [tableData, setTableData] = useState([]);
   useEffect(() => {
-    setTableData(columnSort());
+    setTableData(loadData());
   }, []);
-  
+
   const [ orientation ] = getOrientation();
   const headers = [['Date', 'Date'], ['Temp High','TempHighF'], ['Temp Avg', 'TempAvgF'], ['Temp Low', 'TempLowF'], ['Wind High', 'WindHighMPH'], ['Wind Avg', 'WindAvgMPH']];
 
@@ -22,11 +23,17 @@ const TableWrapper = () => {
     </View>
   )
 
+  const rowFilter = (title, column) => (
+    <FilterField title={title} column={column} setTableData={setTableData} />
+  )
+
   const tableHeaders = headers.map(x => titleElement(x[0],x[1]));
+  const tableFilter = headers.map(x => rowFilter(x[0],x[1]))
 
   return (
     <Table style={orientation === 'portrait' ? styles.listPortrait: styles.listLandscape}>
     <Row data={tableHeaders} style={styles.headers} textStyle={styles.headersText} flexArr={orientation === 'portrait' ? [2,1,1,1,1,1]: [1.3,1,1,1,1]}></Row>
+    <Row data={tableFilter} style={styles.headers} textStyle={styles.headersText} flexArr={orientation === 'portrait' ? [2,1,1,1,1,1]: [1.3,1,1,1,1]}></Row>
       <FlatList
         data={tableData}
         keyExtractor={item => item[0]}
