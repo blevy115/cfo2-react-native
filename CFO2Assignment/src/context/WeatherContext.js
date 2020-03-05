@@ -42,10 +42,10 @@ const filterData = dispatch => async (columnIndex, input) => {
 const sortData = dispatch => (columnIndex, direction) => {
   const sortFunction = (tableData) => {
     return tableData.sort((a, b) => {
-      if (a[columnIndex] < b[columnIndex]) {
+      if (parseInt(a[columnIndex].replace(/\D/g,'')) < parseInt(b[columnIndex].replace(/\D/g,''))) {
         return direction === 'up' ? -1 : 1
       }
-      if (a[columnIndex] > b[columnIndex]) {
+      if (parseInt(a[columnIndex].replace(/\D/g,'')) > parseInt(b[columnIndex].replace(/\D/g,''))) {
         return direction === 'up' ? 1 : -1
       }
       return 0
