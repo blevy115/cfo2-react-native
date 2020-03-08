@@ -4,9 +4,9 @@ This project was generated with expo through `expo init CFO2Assignment`.  It is 
 
 ## Development server
 
-Run `npm start` for a dev server. Navigate to `http://localhost:19002/`. This will load the expo metro bundler.
+If necessary run `npm install` to load node modules.
 
-If necessary run `npm install` to load node modules
+Run `npm start` for a dev server. Navigate to `http://localhost:19002/`. This will load the expo metro bundler.
 
 ## Running Application
 
