@@ -3,14 +3,12 @@ import austinWeather from '../data/austin_weather.json';
 
 const weatherReducer = (state, action) => {
   switch (action.type) {
-      case 'loading_screen':
-        return {...state, loading:true}
       case 'load_data':
         return {...state, loading: false, tableData: action.payload, completeTableData:action.payload}
       case 'sort_data':
-        return {...state, loading: false, tableData: action.payload(state.tableData)}
+        return {...state, tableData: action.payload(state.tableData)}
       case 'filter_data':
-        return {...state, loading: false, tableData: action.payload(state.completeTableData, state.filterFields)}
+        return {...state, tableData: action.payload(state.completeTableData, state.filterFields)}
       case 'add_filter':
         state.filterFields[action.payload[0]] = action.payload[1];
       return state;
@@ -40,8 +38,7 @@ const filterData = dispatch => async (columnIndex, input) => {
   dispatch({type:'filter_data', payload: filterFunction})
 }
 
-const sortData = dispatch => async (columnIndex, direction) => {
-  await dispatch({type:'loading_screen'})
+const sortData = dispatch => (columnIndex, direction) => {
   const sortFunction = (tableData) => {
     return tableData.sort((a, b) => {
       if (parseInt(a[columnIndex].replace(/\D/g,'')) < parseInt(b[columnIndex].replace(/\D/g,''))) {
