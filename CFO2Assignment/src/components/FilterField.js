@@ -13,11 +13,25 @@ const FilterField = ({ columnIndex }) => {
 
   return (
     <TextInput
-      style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+      style={styles.input}
       onChangeText={text => enterText(text)}
       value={value}
+      placeholder="Filter..."
+      placeholderTextColor={'black'}
     />
   )
 }
+
+const styles = StyleSheet.create({
+  input:{
+    height: 35,
+    borderColor: 'gray',
+    borderWidth: 1
+  },
+  placeholder: {
+    color:'black',
+    textAlign:'center'
+  }
+})
 
 export default FilterField;
